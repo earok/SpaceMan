@@ -183,7 +183,7 @@ DEFTYPE.w
 #scrbytewidth=#scrxw/8
 #nrofstars=50
 #nrofanims=73  ;Nr of animlists
-#nroflevels=10
+#nroflevels=9
 
 #maxtobj=1 ;Max 1 objects on a tile in the virtual sectionmap
 #maxrobj=20 ;max 20 objects in one room or section
@@ -579,14 +579,16 @@ spdead=False
 .main
 ;Exit with Escape or "Q"(uit)
 While RawStatus($45)=0 AND RawStatus($10)=0
+
   VWait
+  
   If flagbyte BitTst #vblflag   ;Only exit every second frame
     Show db,0,#bmapyoffset
     db=1-db
     Use BitMap db
     Gosub makedrawlist
     animcount+1:If animcount>#nrofframes Then animcount=0
-    gametime+1
+   ; gametime+1
     ;A little test with scrolling stars
     so1+1                          ;
     If so1=10                      ;
@@ -723,10 +725,10 @@ While RawStatus($45)=0 AND RawStatus($10)=0
     EndIf
 ;    If RawStatus($50) Then sp\oxygen=0
 ;    If RawStatus($51) Then sp\lives=0
-;    If RawStatus($52) Then sp\flags=nrofflags
-;    If RawStatus($53) Then sp\oxygen=#maxoxygen
-;    If RawStatus($54) Then sp\lives=3
-;    If RawStatus($55) Then sp\hitpoints=#maxhealth
+    If RawStatus($52) Then sp\flags=nrofflags
+    If RawStatus($53) Then sp\oxygen=#maxoxygen
+    If RawStatus($54) Then sp\lives=3
+    If RawStatus($55) Then sp\hitpoints=#maxhealth
     If RawStatus($19)
       If pause=True
         pause=False
@@ -793,6 +795,7 @@ Return
 Return
 
 .nextlevel
+
   FadeOut 0,1,1,31
   Use BitMap 1-db
   StartMedModule 0
@@ -800,14 +803,16 @@ Return
   FadeIn 0,0
   BitMapOutput 1-db
   Use BitMap 1-db
-  If level<=#nroflevels
-    Blit scoreshapebase+level/10,140,100
-    Blit scoreshapebase+level-(level/10)*10,162,100
-    level$=levelnames$(level)
-  Else
+  
+  
+  If level>#nroflevels
     level=1
   EndIf
-  level$=levelnames$(level)
+
+  Blit scoreshapebase+level/10,140,100
+  Blit scoreshapebase+level-(level/10)*10,162,100
+  level$=levelnames$(level)  
+  
   QAMIGA
   gamemode=#load
   Gosub clearlists
@@ -2456,7 +2461,7 @@ Return
   Data$ "07"
   Data$ "08"
   Data$ "09"
-  Data$ "10"
+  ;Data$ "10"
 
 .initstars
 ;Find and store the bitplan pointers fo the two bitmaps
